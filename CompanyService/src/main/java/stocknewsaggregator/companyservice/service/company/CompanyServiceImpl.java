@@ -80,4 +80,14 @@ public class CompanyServiceImpl implements CompanyService {
     public MatchingCompanyDto GetMatchingCompany(String id) {
         return CompanyMapper.CompanyToMatchingCompanyDto(companyRepository.findById(UUID.fromString(id)).get());
     }
+
+    @Override
+    public List<MatchingCompanyDto> GetMatchingCompaniesByIds(List<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return companyRepository.findAllById(ids).stream()
+                .map(CompanyMapper::CompanyToMatchingCompanyDto)
+                .toList();
+    }
 }

@@ -4,6 +4,7 @@ import stocknewsaggregator.articleservice.dto.ArticleListItemDto;
 import stocknewsaggregator.articleservice.dto.EntityDto.ArticleDto;
 import stocknewsaggregator.articleservice.dto.CompanyArticleDto;
 import stocknewsaggregator.articleservice.dto.FetchResponseDto;
+import stocknewsaggregator.articleservice.dto.LinkedCompanyDto;
 import stocknewsaggregator.articleservice.dto.SummaryDto;
 import stocknewsaggregator.articleservice.dto.TrendingCompanyDto;
 import stocknewsaggregator.articleservice.service.Analysis.ArticleAnaliseService;
@@ -45,6 +46,10 @@ public class ArticleController {
     @GetMapping("/company/{id}")
     public ResponseEntity<List<CompanyArticleDto>> GetArticlesByCompany(@PathVariable UUID id) {
         return ResponseEntity.ok(articleService.GetArticlesByCompanyId(id));
+    }
+    @GetMapping("/{id}/companies")
+    public ResponseEntity<List<LinkedCompanyDto>> GetArticleCompanies(@PathVariable UUID id) {
+        return ResponseEntity.ok(articleService.GetArticleCompanies(id));
     }
     @GetMapping("/analyse")
     public ResponseEntity analyseArticles() {

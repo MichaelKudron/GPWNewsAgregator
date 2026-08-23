@@ -38,6 +38,26 @@
           >{{ opt.label }}</button>
         }
       </div>
+
+      <!-- Przełącznik widoku -->
+      <div class="view-toggle" role="group" aria-label="Widok">
+        <button class="view-btn" [class.active]="view() === 'grid'" (click)="setView('grid')"
+                aria-label="Widok kafelkowy" title="Kafelki">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </button>
+        <button class="view-btn" [class.active]="view() === 'list'" (click)="setView('list')"
+                aria-label="Widok listy" title="Lista">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -64,24 +84,56 @@
       </div>
     } @else {
       <p class="result-count">{{ companies().length }} spółek</p>
-      <div class="grid">
-        @for (item of companies(); track item.company.isin) {
-          <div class="card" (click)="goToCompany(item.company.isin)" role="button" tabindex="0"
-               (keydown.enter)="goToCompany(item.company.isin)">
-            <div class="card-header">
-              <span class="card-ticker">{{ item.company.ticker }}</span>
-              <span class="card-market">{{ item.company.market }}</span>
+
+      @if (view() === 'grid') {
+        <!-- ── Widok kafelkowy ── -->
+        <div class="grid">
+          @for (item of pageItems(); track item.company.isin) {
+            <div class="card" (click)="goToCompany(item.company.isin)" role="button" tabindex="0"
+                 (keydown.enter)="goToCompany(item.company.isin)">
+              <div class="card-header">
+                <span class="card-ticker">{{ item.company.ticker }}</span>
+                <span class="card-status" [class.active]="item.company.active" [class.delisted]="!item.company.active">
+                  {{ item.company.active ? 'Notowana' : 'Wycofana' }}
+                </span>
+              </div>
+              <p class="card-name">{{ item.company.name }}</p>
+
+              @if (item.companyChartMapping?.symbol; as sym) {
+                <div class="card-chart">
+                  <app-tv-mini-chart [symbol]="sym"></app-tv-mini-chart>
+                </div>
+              }
+
+              <div class="card-footer">
+                <span class="card-sector">{{ item.company.sector }}</span>
+              </div>
             </div>
-            <p class="card-name">{{ item.company.name }}</p>
-            <div class="card-footer">
-              <span class="card-sector">{{ item.company.sector }}</span>
-              <span class="card-status" [class.active]="item.company.active" [class.delisted]="!item.company.active">
+          }
+        </div>
+      } @else {
+        <!-- ── Widok listy ── -->
+        <ul class="rows">
+          @for (item of pageItems(); track item.company.isin) {
+            <li class="row" (click)="goToCompany(item.company.isin)" role="button" tabindex="0"
+                (keydown.enter)="goToCompany(item.company.isin)">
+              <span class="row-ticker">{{ item.company.ticker }}</span>
+              <span class="row-name">{{ item.company.name }}</span>
+              <span class="row-sector">{{ item.company.sector }}</span>
+              <span class="row-status" [class.active]="item.company.active" [class.delisted]="!item.company.active">
                 {{ item.company.active ? 'Notowana' : 'Wycofana' }}
               </span>
-            </div>
-          </div>
-        }
-      </div>
+            </li>
+          }
+        </ul>
+      }
+
+      <app-pagination
+        [total]="companies().length"
+        [pageSize]="pageSize()"
+        [page]="page()"
+        (pageChange)="onPageChange($event)"
+      />
     }
   }
 

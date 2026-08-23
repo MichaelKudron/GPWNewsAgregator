@@ -3,6 +3,7 @@ package stocknewsaggregator.articleservice.service.article;
 import stocknewsaggregator.articleservice.dto.ArticleListItemDto;
 import stocknewsaggregator.articleservice.dto.EntityDto.ArticleDto;
 import stocknewsaggregator.articleservice.dto.CompanyArticleDto;
+import stocknewsaggregator.articleservice.dto.LinkedCompanyDto;
 import stocknewsaggregator.articleservice.dto.SummaryDto;
 import stocknewsaggregator.articleservice.dto.TrendingCompanyDto;
 
@@ -14,6 +15,7 @@ public interface ArticleService {
     SummaryDto GetSummary();
     List<ArticleListItemDto> GetLatest();
     List<ArticleListItemDto> GetLatestClassified();
+    List<LinkedCompanyDto> GetArticleCompanies(UUID articleId);
     List<TrendingCompanyDto> GetTrendingCompanies();
 
     ArticleDto GetArticleById(UUID id);

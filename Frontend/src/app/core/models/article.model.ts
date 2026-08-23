@@ -9,7 +9,14 @@ export interface CompanyArticle {
   matchLevel: MatchLevel;
 }
 
-export type ArticleSentiment = 'positive' | 'negative' | 'neutral' | null;
+export type ArticleSentiment = 'positive' | 'negative' | 'neutral' | 'mixed' | null;
+
+/** Spółka powiązana z artykułem (chip pod newsem / na stronie artykułu) */
+export interface LinkedCompany {
+  isin: string;
+  ticker: string;
+  name: string;
+}
 
 /** Skrócony artykuł na listę newsów (GET /article/latest) */
 export interface NewsItem {
@@ -20,6 +27,8 @@ export interface NewsItem {
   publishedAt: string | null;
   /** przeważający sentyment artykułu (z dominującego powiązania spółki) */
   sentiment: ArticleSentiment;
+  /** powiązane spółki (do chipów) */
+  companies: LinkedCompany[];
 }
 
 /** Bilans sentymentu ostatnich artykułów (GET /article/sentiment-summary) */

@@ -49,6 +49,17 @@
         <h1 class="article-heading">{{ a.title }}</h1>
       </header>
 
+      @if (companies().length) {
+        <div class="linked-companies">
+          <span class="lc-label">Powiązane spółki</span>
+          <div class="lc-chips">
+            @for (c of companies(); track c.isin) {
+              <a class="company-chip" [routerLink]="['/company', c.isin]" [title]="c.name">{{ c.ticker }}</a>
+            }
+          </div>
+        </div>
+      }
+
       @if (a.summary && !isSummaryOnly) {
         <p class="article-lead">{{ a.summary }}</p>
       }

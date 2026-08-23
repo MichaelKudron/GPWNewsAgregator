@@ -7,12 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 public interface ArticleCompanyLinkRepository extends JpaRepository<ArticleCompanyLink, UUID> {
     List<ArticleCompanyLink> findByCompanyId(UUID companyId);
     List<ArticleCompanyLink> findByArticleId(UUID articleId);
+    List<ArticleCompanyLink> findByArticleIdIn(Collection<UUID> articleIds);
     List<ArticleCompanyLink> findByCreatedAtAfter(LocalDateTime since);
 
     @Query("""

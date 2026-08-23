@@ -1,8 +1,45 @@
 <div class="page">
   <header class="head">
-    <h1 class="title">Wiadomości</h1>
-    <p class="sub">Najnowsze artykuły ze spółek notowanych na GPW.</p>
+    <div class="head-text">
+      <h1 class="title">Wiadomości</h1>
+      <p class="sub">Najnowsze artykuły ze spółek notowanych na GPW.</p>
+    </div>
+
+    <!-- Przełącznik widoku -->
+    <div class="view-toggle" role="group" aria-label="Widok">
+      <button class="view-btn" [class.active]="view() === 'grid'" (click)="setView('grid')"
+              aria-label="Widok kafelkowy" title="Kafelki">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </button>
+      <button class="view-btn" [class.active]="view() === 'list'" (click)="setView('list')"
+              aria-label="Widok listy" title="Lista">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+      </button>
+    </div>
   </header>
+
+  <!-- Szablon badge'a sentymentu -->
+  <ng-template #sentBadge let-s>
+    @if (s === 'positive') {
+      <span class="sent-badge pos">Pozytywny</span>
+    } @else if (s === 'negative') {
+      <span class="sent-badge neg">Negatywny</span>
+    } @else if (s === 'neutral') {
+      <span class="sent-badge neu">Neutralny</span>
+    } @else if (s === 'mixed') {
+      <span class="sent-badge mix">Mieszany</span>
+    } @else {
+      <span class="sent-badge none">Bez analizy</span>
+    }
+  </ng-template>
 
   @if (loading()) {
     <div class="state-center">
@@ -17,13 +54,44 @@
     <div class="state-center">
       <p class="state-text">Brak wiadomości.</p>
     </div>
-  } @else {
-    <ul class="news-list">
-      @for (item of news(); track item.id) {
-        <li class="news-card">
-          <a class="news-link" [routerLink]="['/article', item.id]">
+  } @else if (view() === 'grid') {
+    <!-- ── Widok kafelkowy ── -->
+    <div class="news-grid">
+      @for (item of pageItems(); track item.id) {
+        <div class="news-tile">
+          <a class="news-body" [routerLink]="['/article', item.id]">
             <div class="news-meta">
               <span class="source-badge">{{ item.sourceCode }}</span>
+              <ng-container *ngTemplateOutlet="sentBadge; context: { $implicit: item.sentiment }"></ng-container>
+            </div>
+            <h2 class="news-title">{{ item.title }}</h2>
+            @if (item.summary) {
+              <p class="news-summary">{{ item.summary }}</p>
+            }
+            <span class="news-date">{{ item.publishedAt | date:'d MMM y, HH:mm' }}</span>
+          </a>
+          @if (item.companies.length) {
+            <div class="company-chips">
+              @for (c of (item.companies | slice:0:6); track c.isin) {
+                <a class="company-chip" [routerLink]="['/company', c.isin]" [title]="c.name">{{ c.ticker }}</a>
+              }
+              @if (item.companies.length > 6) {
+                <span class="company-chip more">+{{ item.companies.length - 6 }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- ── Widok listowy ── -->
+    <ul class="news-list">
+      @for (item of pageItems(); track item.id) {
+        <li class="news-card">
+          <a class="news-body" [routerLink]="['/article', item.id]">
+            <div class="news-meta">
+              <span class="source-badge">{{ item.sourceCode }}</span>
+              <ng-container *ngTemplateOutlet="sentBadge; context: { $implicit: item.sentiment }"></ng-container>
               <span class="news-date">{{ item.publishedAt | date:'d MMMM y, HH:mm' }}</span>
             </div>
             <h2 class="news-title">{{ item.title }}</h2>
@@ -31,8 +99,27 @@
               <p class="news-summary">{{ item.summary }}</p>
             }
           </a>
+          @if (item.companies.length) {
+            <div class="company-chips">
+              @for (c of (item.companies | slice:0:6); track c.isin) {
+                <a class="company-chip" [routerLink]="['/company', c.isin]" [title]="c.name">{{ c.ticker }}</a>
+              }
+              @if (item.companies.length > 6) {
+                <span class="company-chip more">+{{ item.companies.length - 6 }}</span>
+              }
+            </div>
+          }
         </li>
       }
     </ul>
+  }
+
+  @if (!loading() && !error() && news().length) {
+    <app-pagination
+      [total]="news().length"
+      [pageSize]="pageSize()"
+      [page]="page()"
+      (pageChange)="onPageChange($event)"
+    />
   }
 </div>

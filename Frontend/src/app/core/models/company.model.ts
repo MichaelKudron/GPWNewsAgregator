@@ -36,6 +36,6 @@ export interface CompanyAlias {
 
 export interface CompanyView {
   company: Company;
-  companyChartMapping: CompanyChartMapping;
+  companyChartMapping: CompanyChartMapping | null;
   companyAliases: CompanyAlias[];
 }

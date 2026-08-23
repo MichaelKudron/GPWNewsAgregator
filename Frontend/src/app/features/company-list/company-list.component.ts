@@ -1,16 +1,21 @@
-import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, takeUntil } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, takeUntil, map } from 'rxjs';
 import { CompanyService } from '../../core/services/company.service';
 import { CompanyView } from '../../core/models/company.model';
 import { CompanySearchParams } from '../../core/models/search.model';
+import { PaginationComponent } from '../../shared/pagination/pagination.component';
+import { TvMiniChartComponent } from '../../shared/tv-mini-chart/tv-mini-chart.component';
+
+type ViewMode = 'grid' | 'list';
+const VIEW_KEY = 'signalhub.companyView';
 
 @Component({
   selector: 'app-company-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent, TvMiniChartComponent],
   templateUrl: './company-list.component.html',
   styleUrl: './company-list.component.scss',
 })
@@ -18,7 +23,9 @@ export class CompanyListComponent implements OnInit, OnDestroy {
   private companyService = inject(CompanyService);
   private router = inject(Router);
   private destroy$ = new Subject<void>();
-  private search$ = new Subject<string>();
+  // jeden trigger dla wyszukiwania I sortowania — buduje pełne parametry,
+  // a dedup działa na całości (nie tylko na tekście), więc sort łapie zawsze.
+  private reload$ = new Subject<void>();
 
   companies = signal<CompanyView[]>([]);
   loading = signal(true);
@@ -36,15 +43,29 @@ export class CompanyListComponent implements OnInit, OnDestroy {
   ];
   selectedSort = 0;
 
+  // widok kafelki/lista — zapamiętywany w localStorage
+  view = signal<ViewMode>(this.loadView());
+
+  // paginacja (client-side po pełnej liście); w kaflach mniej na stronę —
+  // każdy kafel ma wykres TradingView, więc nie chcemy ich za dużo naraz.
+  pageSize = computed(() => (this.view() === 'grid' ? 12 : 20));
+  page = signal(0);
+
+  pageItems = computed(() => {
+    const start = this.page() * this.pageSize();
+    return this.companies().slice(start, start + this.pageSize());
+  });
+
   ngOnInit(): void {
-    this.search$
+    this.reload$
       .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap(q => {
+        debounceTime(250),
+        map(() => this.buildParams(this.query)),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+        switchMap(params => {
           this.loading.set(true);
           this.error.set(null);
-          return this.companyService.searchCompanies(this.buildParams(q)).pipe(
+          return this.companyService.searchCompanies(params).pipe(
             catchError(() => {
               this.error.set('Nie udało się załadować listy spółek.');
               this.loading.set(false);
@@ -56,10 +77,11 @@ export class CompanyListComponent implements OnInit, OnDestroy {
       )
       .subscribe(results => {
         this.companies.set(results);
+        this.page.set(0);
         this.loading.set(false);
       });
 
-    this.search$.next('');
+    this.reload$.next();
   }
 
   ngOnDestroy(): void {
@@ -68,7 +90,7 @@ export class CompanyListComponent implements OnInit, OnDestroy {
   }
 
   onQueryChange(): void {
-    this.search$.next(this.query);
+    this.reload$.next();
   }
 
   onSortChange(index: number): void {
@@ -76,11 +98,33 @@ export class CompanyListComponent implements OnInit, OnDestroy {
     const opt = this.sortOptions[index];
     this.sortBy = opt.value;
     this.sortDirection = opt.direction;
-    this.search$.next(this.query);
+    this.reload$.next();
+  }
+
+  setView(mode: ViewMode): void {
+    if (mode === this.view()) return;
+    this.view.set(mode);
+    this.page.set(0); // różne rozmiary stron — wracamy na początek
+    try {
+      localStorage.setItem(VIEW_KEY, mode);
+    } catch { /* prywatny tryb / brak dostępu — trudno */ }
+  }
+
+  onPageChange(p: number): void {
+    this.page.set(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   goToCompany(isin: string): void {
     this.router.navigate(['/company', isin]);
+  }
+
+  private loadView(): ViewMode {
+    try {
+      return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid';
+    } catch {
+      return 'grid';
+    }
   }
 
   private buildParams(q: string): CompanySearchParams {
@@ -88,7 +132,7 @@ export class CompanyListComponent implements OnInit, OnDestroy {
       query: q,
       market: 'Gpw',
       page: 0,
-      size: 100,
+      size: 1000,
       sortBy: this.sortBy,
       sortDirection: this.sortDirection,
     };

@@ -41,21 +41,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   goodNews = computed(() => this.news().filter(n => n.sentiment === 'positive'));
   badNews = computed(() => this.news().filter(n => n.sentiment === 'negative'));
 
-  // procenty do paska nastroju
-  moodTotal = computed(() => {
-    const m = this.mood();
-    return m ? m.positive + m.negative + m.neutral : 0;
-  });
-  moodPct = computed(() => {
-    const m = this.mood();
-    const t = this.moodTotal();
-    if (!m || t === 0) return { positive: 0, negative: 0, neutral: 0 };
-    return {
-      positive: Math.round((m.positive / t) * 100),
-      negative: Math.round((m.negative / t) * 100),
-      neutral: Math.round((m.neutral / t) * 100),
-    };
-  });
   moodLabel = computed(() => {
     const m = this.mood();
     if (!m) return '';

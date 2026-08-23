@@ -5,6 +5,7 @@ import {
   Article,
   CompanyArticle,
   NewsItem,
+  LinkedCompany,
   MarketMood,
   TrendingCompany,
 } from '../models/article.model';
@@ -18,6 +19,12 @@ interface CompanyArticleWire {
   match_level: CompanyArticle['matchLevel'];
 }
 
+interface LinkedCompanyWire {
+  isin: string;
+  ticker: string;
+  name: string;
+}
+
 interface NewsItemWire {
   id: string;
   title: string;
@@ -25,6 +32,7 @@ interface NewsItemWire {
   summary: string | null;
   published_at: string | null;
   sentiment: NewsItem['sentiment'];
+  companies: LinkedCompanyWire[] | null;
 }
 
 interface TrendingWire {
@@ -81,6 +89,7 @@ export class ArticleService {
         summary: n.summary,
         publishedAt: n.published_at,
         sentiment: n.sentiment,
+        companies: n.companies ?? [],
       })))
     );
   }
@@ -95,8 +104,14 @@ export class ArticleService {
         summary: n.summary,
         publishedAt: n.published_at,
         sentiment: n.sentiment,
+        companies: n.companies ?? [],
       })))
     );
+  }
+
+  /** Spółki powiązane z danym artykułem (chipy na stronie artykułu). */
+  getArticleCompanies(articleId: string): Observable<LinkedCompany[]> {
+    return this.http.get<LinkedCompanyWire[]>(`${this.base}/${articleId}/companies`);
   }
 
   /** Bilans sentymentu ostatnich artykułów — kafelek „Nastrój rynku". */
