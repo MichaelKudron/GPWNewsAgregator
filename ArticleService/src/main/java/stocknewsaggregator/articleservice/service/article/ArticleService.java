@@ -13,6 +13,7 @@ public interface ArticleService {
     List<CompanyArticleDto> GetArticlesByCompanyId(UUID companyId);
     SummaryDto GetSummary();
     List<ArticleListItemDto> GetLatest();
+    List<ArticleListItemDto> GetLatestClassified();
     List<TrendingCompanyDto> GetTrendingCompanies();
 
     ArticleDto GetArticleById(UUID id);

@@ -85,6 +85,20 @@ export class ArticleService {
     );
   }
 
+  /** Najnowsze PRZEanalizowane artykuły (dominujący sentyment poz/neg) — kolumny dobre/złe wieści. */
+  getClassifiedArticles(): Observable<NewsItem[]> {
+    return this.http.get<NewsItemWire[]>(`${this.base}/latest-classified`).pipe(
+      map(list => list.map(n => ({
+        id: n.id,
+        title: n.title,
+        sourceCode: n.source_code,
+        summary: n.summary,
+        publishedAt: n.published_at,
+        sentiment: n.sentiment,
+      })))
+    );
+  }
+
   /** Bilans sentymentu ostatnich artykułów — kafelek „Nastrój rynku". */
   getMarketMood(): Observable<MarketMood> {
     return this.http.get<MarketMood>(`${this.base}/sentiment-summary`);

@@ -81,6 +81,24 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public List<ArticleListItemDto> GetLatestClassified() {
+        // Bierzemy więcej najnowszych PRZEanalizowanych, bo po odfiltrowaniu
+        // do jednoznacznie pozytywnych/negatywnych (bez MIXED/NEUTRAL) zostaje mniej.
+        return articleRepository.findLatestAnalyzed(PageRequest.of(0, 40)).stream()
+                .map(a -> new ArticleListItemDto(
+                        a.getId(),
+                        a.getTitle(),
+                        a.getSourceCode(),
+                        a.getSummary(),
+                        a.getPublishedAt(),
+                        dominantSentiment(a.getId())))
+                .filter(dto -> "positive".equals(dto.getSentiment())
+                        || "negative".equals(dto.getSentiment()))
+                .limit(12)
+                .toList();
+    }
+
+    @Override
     public List<TrendingCompanyDto> GetTrendingCompanies() {
         return articleCompanyLinkRepository
                 .findTopCompaniesSince(LocalDateTime.now().minusDays(2), PageRequest.of(0, 5))

@@ -94,7 +94,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // odśwież status sesji co minutę
     this.clock = setInterval(() => this.market.set(getMarketStatus()), 60_000);
 
-    this.articleService.getLatestArticles().subscribe({
+    this.articleService.getClassifiedArticles().subscribe({
       next: list => {
         this.news.set(list);
         this.newsLoading.set(false);
