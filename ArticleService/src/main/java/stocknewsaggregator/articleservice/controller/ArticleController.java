@@ -59,6 +59,10 @@ public class ArticleController {
     public ResponseEntity<List<ArticleListItemDto>> getLatest() {
         return ResponseEntity.ok(articleService.GetLatest());
     }
+    @GetMapping("/latest-classified")
+    public ResponseEntity<List<ArticleListItemDto>> getLatestClassified() {
+        return ResponseEntity.ok(articleService.GetLatestClassified());
+    }
     @GetMapping("/trending-companies")
     public ResponseEntity<List<TrendingCompanyDto>> getTrendingCompanies() {
         return ResponseEntity.ok(articleService.GetTrendingCompanies());

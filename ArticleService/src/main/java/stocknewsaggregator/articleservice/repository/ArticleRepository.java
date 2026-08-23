@@ -15,4 +15,11 @@ public interface ArticleRepository extends JpaRepository<Article, UUID> {
 
     @Query("select a from Article a order by a.publishedAt desc nulls last")
     List<Article> findLatest(Pageable pageable);
+
+    // Najnowsze artykuły, które mają już policzony sentyment (choć jedno powiązanie).
+    @Query("select distinct a from Article a " +
+            "join ArticleCompanyLink l on l.articleId = a.id " +
+            "where l.sentiment is not null " +
+            "order by a.publishedAt desc nulls last")
+    List<Article> findLatestAnalyzed(Pageable pageable);
 }
