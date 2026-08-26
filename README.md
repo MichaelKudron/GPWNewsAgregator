@@ -1,5 +1,7 @@
 # SignalHub
 
+Dostępne pod adresem: https://app.signalhub.pl/
+
 Microserwisowy agregator newsów z warszawskiej giełdy (GPW). Pobiera artykuły
 z serwisów finansowych, dopasowuje je do notowanych spółek, ocenia **sentyment
 per spółka** modelem NLP i prezentuje całość w webowym pulpicie: indeksy,
