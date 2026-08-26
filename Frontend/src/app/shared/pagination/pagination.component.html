@@ -1,0 +1,21 @@
+@if (totalPages() > 1) {
+  <nav class="pager" aria-label="Paginacja">
+    <button class="pg-btn pg-arrow" [disabled]="page() === 0" (click)="go(page() - 1)" aria-label="Poprzednia">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    @for (item of items(); track $index) {
+      @if (isDots(item)) {
+        <span class="pg-dots">…</span>
+      } @else {
+        <button class="pg-btn" [class.active]="item === page()" (click)="go(item)">{{ item + 1 }}</button>
+      }
+    }
+
+    <button class="pg-btn pg-arrow" [disabled]="page() === totalPages() - 1" (click)="go(page() + 1)" aria-label="Następna">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </nav>
+}

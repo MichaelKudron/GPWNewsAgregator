@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,4 +18,5 @@ public class ArticleListItemDto {
     private String summary;
     private LocalDateTime publishedAt; // JSON: published_at
     private String sentiment;    // positive | negative | neutral | null
+    private List<LinkedCompanyDto> companies; // powiązane spółki (chipy)
 }

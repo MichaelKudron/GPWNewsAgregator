@@ -1,0 +1,63 @@
+$bg-card-2:    #1c1c23;
+$border:       rgba(255,255,255,0.07);
+$border-hover: rgba(255,255,255,0.13);
+$text-1:       #edf0f8;
+$text-2:       #7f86a0;
+$text-3:       #454c63;
+$accent:       #f97316;
+$accent-dim:   rgba(249,115,22,0.12);
+$accent-bdr:   rgba(249,115,22,0.28);
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 2rem 0 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pg-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg-card-2;
+  border: 1px solid $border;
+  border-radius: 9px;
+  color: $text-2;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+
+  &:hover:not(:disabled):not(.active) {
+    color: $text-1;
+    border-color: $border-hover;
+  }
+
+  &.active {
+    color: $accent;
+    background: $accent-dim;
+    border-color: $accent-bdr;
+    font-weight: 600;
+    cursor: default;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.pg-arrow { color: $text-2; }
+
+.pg-dots {
+  min-width: 20px;
+  text-align: center;
+  color: $text-3;
+  font-size: 0.85rem;
+  user-select: none;
+}

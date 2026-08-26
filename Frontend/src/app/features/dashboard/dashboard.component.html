@@ -29,15 +29,31 @@
         <span class="mood-verdict">{{ moodLabel() }}</span>
       </div>
       <div class="mood-bar">
-        <span class="seg pos" [style.width.%]="moodPct().positive"></span>
-        <span class="seg neu" [style.width.%]="moodPct().neutral"></span>
-        <span class="seg neg" [style.width.%]="moodPct().negative"></span>
+        <span class="seg pos" [style.flexGrow]="m.positive"></span>
+        <span class="seg neu" [style.flexGrow]="m.neutral"></span>
+        <span class="seg neg" [style.flexGrow]="m.negative"></span>
       </div>
       <div class="mood-legend">
         <span class="leg pos">{{ m.positive }} pozytywnych</span>
         <span class="leg neu">{{ m.neutral }} neutralnych</span>
         <span class="leg neg">{{ m.negative }} negatywnych</span>
       </div>
+    </section>
+  }
+
+  <!-- Sentyment rynku w czasie (skumulowany) -->
+  @if (sentimentTimeline().length) {
+    <section class="sentiment-card">
+      <div class="sentiment-head">
+        <span class="sentiment-title">Sentyment rynku w czasie</span>
+        <span class="sentiment-score" [class.pos]="sentimentScore() >= 0" [class.neg]="sentimentScore() < 0">
+          {{ sentimentScore() >= 0 ? '+' : '' }}{{ sentimentScore() }} pkt
+        </span>
+      </div>
+      <div class="sentiment-chart">
+        <app-sentiment-chart [points]="sentimentTimeline()"></app-sentiment-chart>
+      </div>
+      <p class="sentiment-note">Skumulowany bilans — pozytywny news +1, negatywny −1.</p>
     </section>
   }
 

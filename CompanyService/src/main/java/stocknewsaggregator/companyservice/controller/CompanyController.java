@@ -43,4 +43,8 @@ public class CompanyController {
     public ResponseEntity<MatchingCompanyDto> GetMatchingCompanies(@PathVariable UUID id) {
         return ResponseEntity.ok(companyService.GetMatchingCompany(id.toString()));
     }
+    @PostMapping("/matching/batch")
+    public ResponseEntity<List<MatchingCompanyDto>> GetMatchingCompaniesByIds(@RequestBody List<UUID> ids) {
+        return ResponseEntity.ok(companyService.GetMatchingCompaniesByIds(ids));
+    }
 }

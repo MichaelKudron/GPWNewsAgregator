@@ -46,6 +46,47 @@ $r-lg:         14px;
   margin-bottom: 1.5rem;
 }
 
+// ── Sentyment w czasie ──
+.sentiment-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $r-lg;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.sentiment-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.sentiment-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-1;
+}
+
+.sentiment-score {
+  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &.pos { color: $green; }
+  &.neg { color: $red; }
+}
+
+.sentiment-chart {
+  height: 170px;
+}
+
+.sentiment-note {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: $text-3;
+}
+
 .mood-head {
   display: flex;
   align-items: baseline;
@@ -72,7 +113,7 @@ $r-lg:         14px;
   overflow: hidden;
   background: $bg-card-2;
 
-  .seg { height: 100%; transition: width 0.3s ease; }
+  .seg { height: 100%; min-width: 0; flex-basis: 0; transition: flex-grow 0.3s ease; }
   .seg.pos { background: $green; }
   .seg.neu { background: $text-3; }
   .seg.neg { background: $red; }

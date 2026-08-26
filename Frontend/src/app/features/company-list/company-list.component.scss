@@ -128,6 +128,38 @@ $r:            10px;
   }
 }
 
+// ── View toggle (kafelki / lista) ────────────────────────────────────────────
+.view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $r;
+  padding: 0.2rem;
+}
+
+.view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 30px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: $text-3;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover { color: $text-1; }
+
+  &.active {
+    color: $accent;
+    background: $accent-dim;
+  }
+}
+
 // ── States ───────────────────────────────────────────────────────────────────
 .state-center {
   display: flex;
@@ -167,8 +199,17 @@ $r:            10px;
 // ── Grid ─────────────────────────────────────────────────────────────────────
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+// mini-wykres TradingView w kaflu
+.card-chart {
+  height: 120px;
+  margin: 0.3rem 0 0.2rem;
+  border-radius: 8px;
+  overflow: hidden;
+  pointer-events: none; // klik w kafel = przejście do spółki, nie interakcja z wykresem
 }
 
 // ── Card ─────────────────────────────────────────────────────────────────────
@@ -257,4 +298,71 @@ $r:            10px;
     color: $red;
     border: 1px solid $red-bdr;
   }
+}
+
+// ── List view (rzędy) ─────────────────────────────────────────────────────────
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $r;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover { border-color: $border-hover; background: $bg-card-2; }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 70px 1fr auto;
+    .row-sector { display: none; }
+  }
+}
+
+.row-ticker {
+  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: $text-1;
+  letter-spacing: 0.04em;
+}
+
+.row-name {
+  font-size: 0.86rem;
+  color: $text-2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-sector {
+  font-size: 0.78rem;
+  color: $text-3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  text-align: right;
+}
+
+.row-status {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 0.15rem 0.55rem;
+
+  &.active { background: $green-dim; color: $green; border: 1px solid $green-bdr; }
+  &.delisted { background: $red-dim; color: $red; border: 1px solid $red-bdr; }
 }

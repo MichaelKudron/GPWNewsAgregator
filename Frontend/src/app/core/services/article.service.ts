@@ -5,7 +5,9 @@ import {
   Article,
   CompanyArticle,
   NewsItem,
+  LinkedCompany,
   MarketMood,
+  SentimentPoint,
   TrendingCompany,
 } from '../models/article.model';
 import { environment } from '../../../environments/environment';
@@ -18,6 +20,12 @@ interface CompanyArticleWire {
   match_level: CompanyArticle['matchLevel'];
 }
 
+interface LinkedCompanyWire {
+  isin: string;
+  ticker: string;
+  name: string;
+}
+
 interface NewsItemWire {
   id: string;
   title: string;
@@ -25,6 +33,7 @@ interface NewsItemWire {
   summary: string | null;
   published_at: string | null;
   sentiment: NewsItem['sentiment'];
+  companies: LinkedCompanyWire[] | null;
 }
 
 interface TrendingWire {
@@ -81,6 +90,7 @@ export class ArticleService {
         summary: n.summary,
         publishedAt: n.published_at,
         sentiment: n.sentiment,
+        companies: n.companies ?? [],
       })))
     );
   }
@@ -95,13 +105,27 @@ export class ArticleService {
         summary: n.summary,
         publishedAt: n.published_at,
         sentiment: n.sentiment,
+        companies: n.companies ?? [],
       })))
     );
+  }
+
+  /** Spółki powiązane z danym artykułem (chipy na stronie artykułu). */
+  getArticleCompanies(articleId: string): Observable<LinkedCompany[]> {
+    return this.http.get<LinkedCompanyWire[]>(`${this.base}/${articleId}/companies`);
   }
 
   /** Bilans sentymentu ostatnich artykułów — kafelek „Nastrój rynku". */
   getMarketMood(): Observable<MarketMood> {
     return this.http.get<MarketMood>(`${this.base}/sentiment-summary`);
+  }
+
+  /** Skumulowany sentyment w czasie — cały rynek lub jedna spółka (companyId). */
+  getSentimentTimeline(companyId?: string): Observable<SentimentPoint[]> {
+    const url = companyId
+      ? `${this.base}/sentiment-timeline?companyId=${companyId}`
+      : `${this.base}/sentiment-timeline`;
+    return this.http.get<SentimentPoint[]>(url);
   }
 
   /** Najczęściej opisywane spółki (top 5 wg liczby artykułów). */

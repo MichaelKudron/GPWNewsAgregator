@@ -1,0 +1,24 @@
+@if (points().length) {
+  <svg class="chart" [attr.viewBox]="'0 0 ' + W + ' ' + H" preserveAspectRatio="none"
+       [class.pos]="positive()" [class.neg]="!positive()">
+    <!-- linia zerowa -->
+    <line class="zero" [attr.x1]="0" [attr.x2]="W" [attr.y1]="zeroY()" [attr.y2]="zeroY()"></line>
+
+    <!-- wypełnienie -->
+    @if (areaPath()) {
+      <path class="area" [attr.d]="areaPath()"></path>
+    }
+
+    <!-- linia -->
+    @if (linePath()) {
+      <path class="line" [attr.d]="linePath()"></path>
+    }
+
+    <!-- pojedynczy punkt (za mało danych na linię) -->
+    @if (singlePoint()) {
+      <circle class="dot" [attr.cx]="singleX()" [attr.cy]="singleY()" r="4"></circle>
+    }
+  </svg>
+} @else {
+  <div class="empty">Brak danych o sentymencie.</div>
+}

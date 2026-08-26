@@ -3,8 +3,9 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TvChartComponent } from '../../shared/tv-chart/tv-chart.component';
 import { TvWidgetComponent } from '../../shared/tv-widget/tv-widget.component';
+import { SentimentChartComponent } from '../../shared/sentiment-chart/sentiment-chart.component';
 import { ArticleService } from '../../core/services/article.service';
-import { NewsItem, MarketMood, TrendingCompany } from '../../core/models/article.model';
+import { NewsItem, MarketMood, TrendingCompany, SentimentPoint } from '../../core/models/article.model';
 import { getMarketStatus, MarketStatus } from '../../core/market-status';
 
 interface IndexTab {
@@ -15,7 +16,7 @@ interface IndexTab {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, TvChartComponent, TvWidgetComponent],
+  imports: [CommonModule, DatePipe, RouterLink, TvChartComponent, TvWidgetComponent, SentimentChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -37,25 +38,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mood = signal<MarketMood | null>(null);
   trending = signal<TrendingCompany[]>([]);
 
+  sentimentTimeline = signal<SentimentPoint[]>([]);
+  sentimentScore = computed(() => {
+    const t = this.sentimentTimeline();
+    return t.length ? t[t.length - 1].score : 0;
+  });
+
   // podział newsów na dobre/złe wieści
   goodNews = computed(() => this.news().filter(n => n.sentiment === 'positive'));
   badNews = computed(() => this.news().filter(n => n.sentiment === 'negative'));
 
-  // procenty do paska nastroju
-  moodTotal = computed(() => {
-    const m = this.mood();
-    return m ? m.positive + m.negative + m.neutral : 0;
-  });
-  moodPct = computed(() => {
-    const m = this.mood();
-    const t = this.moodTotal();
-    if (!m || t === 0) return { positive: 0, negative: 0, neutral: 0 };
-    return {
-      positive: Math.round((m.positive / t) * 100),
-      negative: Math.round((m.negative / t) * 100),
-      neutral: Math.round((m.neutral / t) * 100),
-    };
-  });
   moodLabel = computed(() => {
     const m = this.mood();
     if (!m) return '';
@@ -104,6 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.articleService.getMarketMood().subscribe(m => this.mood.set(m));
     this.articleService.getTrendingCompanies().subscribe(t => this.trending.set(t));
+    this.articleService.getSentimentTimeline().subscribe(t => this.sentimentTimeline.set(t));
   }
 
   selectIndex(tab: IndexTab): void {

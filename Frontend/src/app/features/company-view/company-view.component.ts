@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   inject,
   signal,
+  computed,
   ViewChild,
   ElementRef,
 } from '@angular/core';
@@ -15,12 +16,13 @@ import { switchMap, catchError, EMPTY } from 'rxjs';
 import { CompanyService } from '../../core/services/company.service';
 import { CompanyView } from '../../core/models/company.model';
 import { ArticleService } from '../../core/services/article.service';
-import { CompanyArticle, MatchLevel } from '../../core/models/article.model';
+import { CompanyArticle, MatchLevel, SentimentPoint } from '../../core/models/article.model';
+import { SentimentChartComponent } from '../../shared/sentiment-chart/sentiment-chart.component';
 
 @Component({
   selector: 'app-company-view',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink],
+  imports: [CommonModule, DatePipe, RouterLink, SentimentChartComponent],
   templateUrl: './company-view.component.html',
   styleUrl: './company-view.component.scss',
 })
@@ -39,6 +41,12 @@ export class CompanyViewComponent implements OnInit, AfterViewInit, OnDestroy {
   articles = signal<CompanyArticle[]>([]);
   articlesLoading = signal(false);
   articlesError = signal(false);
+
+  sentimentTimeline = signal<SentimentPoint[]>([]);
+  sentimentScore = computed(() => {
+    const t = this.sentimentTimeline();
+    return t.length ? t[t.length - 1].score : 0;
+  });
 
   private tvScript: HTMLScriptElement | null = null;
   private viewReady = false;
@@ -96,7 +104,16 @@ export class CompanyViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataReady = true;
         this.tryInitChart();
         this.loadArticles(view.company.id);
+        this.loadSentiment(view.company.id);
       });
+  }
+
+  private loadSentiment(companyId: string): void {
+    this.sentimentTimeline.set([]);
+    this.articleService.getSentimentTimeline(companyId).subscribe({
+      next: t => this.sentimentTimeline.set(t),
+      error: () => this.sentimentTimeline.set([]),
+    });
   }
 
   private loadArticles(companyId: string): void {
