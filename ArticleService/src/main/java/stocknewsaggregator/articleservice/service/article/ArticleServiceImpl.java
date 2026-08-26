@@ -180,27 +180,37 @@ public class ArticleServiceImpl implements ArticleService {
         }).toList();
     }
 
-    /** Hurtowo rozwiązuje id spółek → lekki DTO (jedno zapytanie do CompanyService). */
+    /**
+     * Hurtowo rozwiązuje id spółek → lekki DTO (jedno zapytanie do CompanyService).
+     * Fail-soft: wzbogacenie o spółki jest opcjonalne — jeśli CompanyService nie
+     * odpowie (np. brak endpointu / niedostępny), zwracamy pustą mapę zamiast
+     * wywalać całą listę newsów.
+     */
     private Map<UUID, LinkedCompanyDto> resolveCompanies(Collection<UUID> ids) {
         if (ids.isEmpty()) {
             return Map.of();
         }
-        List<MatchingCompanyDto> resolved = webClient.post()
-                .uri(serviceUrls.getCompany() + "/api/v1/company/matching/batch")
-                .bodyValue(ids)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<MatchingCompanyDto>>() {})
-                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
-                        .filter(WebClientRequestException.class::isInstance))
-                .block();
-        if (resolved == null) {
+        try {
+            List<MatchingCompanyDto> resolved = webClient.post()
+                    .uri(serviceUrls.getCompany() + "/api/v1/company/matching/batch")
+                    .bodyValue(ids)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<MatchingCompanyDto>>() {})
+                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                            .filter(WebClientRequestException.class::isInstance))
+                    .block();
+            if (resolved == null) {
+                return Map.of();
+            }
+            Map<UUID, LinkedCompanyDto> map = new HashMap<>();
+            for (MatchingCompanyDto c : resolved) {
+                map.put(c.getId(), new LinkedCompanyDto(c.getIsin(), c.getTicker(), c.getName()));
+            }
+            return map;
+        } catch (Exception e) {
+            System.err.println("resolveCompanies failed, returning no companies: " + e.getMessage());
             return Map.of();
         }
-        Map<UUID, LinkedCompanyDto> map = new HashMap<>();
-        for (MatchingCompanyDto c : resolved) {
-            map.put(c.getId(), new LinkedCompanyDto(c.getIsin(), c.getTicker(), c.getName()));
-        }
-        return map;
     }
 
     /** Przeważający sentyment artykułu = z powiązania o najwyższym matchScore. */
