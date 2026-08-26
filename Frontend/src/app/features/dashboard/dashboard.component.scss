@@ -87,6 +87,90 @@ $r-lg:         14px;
   color: $text-3;
 }
 
+// ── Panel newsów wybranego dnia ──
+.day-panel {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid $border;
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.day-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $text-1;
+}
+
+.day-close {
+  background: none;
+  border: none;
+  color: $text-3;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+
+  &:hover { color: $text-1; background: $bg-card-2; }
+}
+
+.day-empty {
+  font-size: 0.8rem;
+  color: $text-3;
+}
+
+.day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.day-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+
+  &:hover {
+    background: $bg-card-2;
+    .day-news-title { color: $accent; }
+  }
+}
+
+.day-badge {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.8rem;
+
+  &.pos { color: $green; background: $green-dim; }
+  &.neg { color: $red; background: $red-dim; }
+  &.neu { color: $text-2; background: rgba(127,134,160,0.12); }
+}
+
+.day-news-title {
+  font-size: 0.85rem;
+  color: $text-1;
+  line-height: 1.35;
+  transition: color 0.12s ease;
+}
+
 .mood-head {
   display: flex;
   align-items: baseline;

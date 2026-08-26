@@ -18,6 +18,18 @@
     @if (singlePoint()) {
       <circle class="dot" [attr.cx]="singleX()" [attr.cy]="singleY()" r="4"></circle>
     }
+
+    <!-- prowadnica + kropka pod kursorem -->
+    @if (hoverX() !== null) {
+      <line class="guide" [attr.x1]="hoverX()" [attr.x2]="hoverX()" [attr.y1]="0" [attr.y2]="H"></line>
+      <circle class="hover-dot" [attr.cx]="hoverX()" [attr.cy]="hoverY()" r="4"></circle>
+    }
+
+    <!-- klikalne pasy (jeden na dzień) -->
+    @for (b of bands(); track b.i) {
+      <rect class="band" [attr.x]="b.x" [attr.y]="0" [attr.width]="b.w" [attr.height]="H"
+            (mouseenter)="onEnter(b.i)" (mouseleave)="onLeave()" (click)="onClick(b.point)"></rect>
+    }
   </svg>
 } @else {
   <div class="empty">Brak danych o sentymencie.</div>

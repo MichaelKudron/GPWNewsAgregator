@@ -121,9 +121,36 @@
           </span>
         </div>
         <div class="sentiment-body">
-          <app-sentiment-chart [points]="sentimentTimeline()"></app-sentiment-chart>
+          <app-sentiment-chart [points]="sentimentTimeline()" (pointClick)="onDayClick($event)"></app-sentiment-chart>
         </div>
-        <p class="sentiment-note">Skumulowany bilans newsów — pozytywny +1, negatywny −1.</p>
+        <p class="sentiment-note">Skumulowany bilans newsów — pozytywny +1, negatywny −1. Kliknij dzień, by zobaczyć newsy.</p>
+
+        @if (selectedDay()) {
+          <div class="day-panel">
+            <div class="day-head">
+              <span class="day-title">Newsy z {{ selectedDay() | date:'d MMM y' }}</span>
+              <button class="day-close" (click)="closeDay()" aria-label="Zamknij">✕</button>
+            </div>
+            @if (dayLoading()) {
+              <p class="day-empty">Ładowanie…</p>
+            } @else if (!dayNews().length) {
+              <p class="day-empty">Brak newsów tego dnia.</p>
+            } @else {
+              <ul class="day-list">
+                @for (item of dayNews(); track item.id) {
+                  <li>
+                    <a class="day-link" [routerLink]="['/article', item.id]">
+                      @if (item.sentiment === 'positive') { <span class="day-badge pos">+</span> }
+                      @else if (item.sentiment === 'negative') { <span class="day-badge neg">−</span> }
+                      @else { <span class="day-badge neu">·</span> }
+                      <span class="day-news-title">{{ item.title }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
       </section>
     }
 
@@ -133,6 +160,9 @@
         <span class="articles-label">Powiązane artykuły</span>
         @if (!articlesLoading()) {
           <span class="articles-count">{{ articles().length }}</span>
+        }
+        @if (articles().length > 5 && company) {
+          <a class="articles-all" [routerLink]="['/company', company?.isin, 'news']">Wszystkie →</a>
         }
       </div>
 
@@ -151,7 +181,7 @@
         </div>
       } @else {
         <ul class="article-list">
-          @for (article of articles(); track article.articleId) {
+          @for (article of recentArticles(); track article.articleId) {
             <li class="article-row" (click)="openArticle(article)">
               <div class="article-title-wrap">
                 <span class="article-title">{{ article.articleTitle }}</span>

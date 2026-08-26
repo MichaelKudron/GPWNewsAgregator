@@ -16,7 +16,7 @@ import { switchMap, catchError, EMPTY } from 'rxjs';
 import { CompanyService } from '../../core/services/company.service';
 import { CompanyView } from '../../core/models/company.model';
 import { ArticleService } from '../../core/services/article.service';
-import { CompanyArticle, MatchLevel, SentimentPoint } from '../../core/models/article.model';
+import { CompanyArticle, MatchLevel, SentimentPoint, NewsItem } from '../../core/models/article.model';
 import { SentimentChartComponent } from '../../shared/sentiment-chart/sentiment-chart.component';
 
 @Component({
@@ -41,12 +41,35 @@ export class CompanyViewComponent implements OnInit, AfterViewInit, OnDestroy {
   articles = signal<CompanyArticle[]>([]);
   articlesLoading = signal(false);
   articlesError = signal(false);
+  recentArticles = computed(() => this.articles().slice(0, 5));
 
   sentimentTimeline = signal<SentimentPoint[]>([]);
   sentimentScore = computed(() => {
     const t = this.sentimentTimeline();
     return t.length ? t[t.length - 1].score : 0;
   });
+
+  // drilldown: newsy tej spółki z wybranego dnia
+  selectedDay = signal<string | null>(null);
+  dayNews = signal<NewsItem[]>([]);
+  dayLoading = signal(false);
+
+  onDayClick(p: SentimentPoint): void {
+    const id = this.company?.id;
+    if (!id) return;
+    this.selectedDay.set(p.date);
+    this.dayNews.set([]);
+    this.dayLoading.set(true);
+    this.articleService.getNewsByDay(p.date, id).subscribe({
+      next: n => { this.dayNews.set(n); this.dayLoading.set(false); },
+      error: () => this.dayLoading.set(false),
+    });
+  }
+
+  closeDay(): void {
+    this.selectedDay.set(null);
+    this.dayNews.set([]);
+  }
 
   private tvScript: HTMLScriptElement | null = null;
   private viewReady = false;

@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SentimentPoint } from '../../core/models/article.model';
 
@@ -16,6 +16,11 @@ import { SentimentPoint } from '../../core/models/article.model';
 })
 export class SentimentChartComponent {
   points = input.required<SentimentPoint[]>();
+
+  /** klik w dzień — emituje wybrany punkt (do drilldownu newsów) */
+  pointClick = output<SentimentPoint>();
+
+  hoverIndex = signal<number | null>(null);
 
   // stała przestrzeń rysowania; SVG skaluje się do kontenera
   readonly W = 700;
@@ -67,4 +72,31 @@ export class SentimentChartComponent {
   singlePoint = computed(() => this.points().length === 1);
   singleX = computed(() => this.x(0));
   singleY = computed(() => (this.points().length ? this.y(this.points()[0].score) : this.H / 2));
+
+  /** klikalne pasy (jeden na dzień) — pełna wysokość, szerokość = odstęp między dniami */
+  bands = computed(() => {
+    const pts = this.points();
+    const n = pts.length;
+    const bw = n > 1 ? this.W / (n - 1) : this.W;
+    return pts.map((p, i) => ({
+      i,
+      point: p,
+      x: Math.max(0, this.x(i) - bw / 2),
+      w: bw,
+    }));
+  });
+
+  hoverX = computed(() => {
+    const i = this.hoverIndex();
+    return i === null ? null : this.x(i);
+  });
+
+  hoverY = computed(() => {
+    const i = this.hoverIndex();
+    return i === null ? null : this.y(this.points()[i].score);
+  });
+
+  onEnter(i: number): void { this.hoverIndex.set(i); }
+  onLeave(): void { this.hoverIndex.set(null); }
+  onClick(p: SentimentPoint): void { this.pointClick.emit(p); }
 }

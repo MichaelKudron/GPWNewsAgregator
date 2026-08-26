@@ -53,6 +53,10 @@ public class ArticleController {
     public ResponseEntity<List<LinkedCompanyDto>> GetArticleCompanies(@PathVariable UUID id) {
         return ResponseEntity.ok(articleService.GetArticleCompanies(id));
     }
+    @GetMapping("/company/{id}/list")
+    public ResponseEntity<List<ArticleListItemDto>> GetCompanyArticlesList(@PathVariable UUID id) {
+        return ResponseEntity.ok(articleService.GetCompanyArticlesList(id));
+    }
     @GetMapping("/analyse")
     public ResponseEntity analyseArticles() {
         articleAnaliseService.AnalyzeArticle();
@@ -66,6 +70,12 @@ public class ArticleController {
     public ResponseEntity<List<SentimentPointDto>> getSentimentTimeline(
             @RequestParam(required = false) UUID companyId) {
         return ResponseEntity.ok(articleService.GetSentimentTimeline(companyId));
+    }
+    @GetMapping("/by-day")
+    public ResponseEntity<List<ArticleListItemDto>> getNewsByDay(
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate date,
+            @RequestParam(required = false) UUID companyId) {
+        return ResponseEntity.ok(articleService.GetNewsByDay(date, companyId));
     }
     @GetMapping("/latest")
     public ResponseEntity<List<ArticleListItemDto>> getLatest() {

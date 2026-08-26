@@ -44,6 +44,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return t.length ? t[t.length - 1].score : 0;
   });
 
+  // drilldown: newsy z wybranego dnia
+  selectedDay = signal<string | null>(null);
+  dayNews = signal<NewsItem[]>([]);
+  dayLoading = signal(false);
+
+  onDayClick(p: SentimentPoint): void {
+    this.selectedDay.set(p.date);
+    this.dayNews.set([]);
+    this.dayLoading.set(true);
+    this.articleService.getNewsByDay(p.date).subscribe({
+      next: n => { this.dayNews.set(n); this.dayLoading.set(false); },
+      error: () => this.dayLoading.set(false),
+    });
+  }
+
+  closeDay(): void {
+    this.selectedDay.set(null);
+    this.dayNews.set([]);
+  }
+
   // podział newsów na dobre/złe wieści
   goodNews = computed(() => this.news().filter(n => n.sentiment === 'positive'));
   badNews = computed(() => this.news().filter(n => n.sentiment === 'negative'));

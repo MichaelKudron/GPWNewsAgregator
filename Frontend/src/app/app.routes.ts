@@ -26,6 +26,14 @@ export const routes: Routes = [
     title: 'Newsy — SignalHub',
   },
   {
+    path: 'company/:isin/news',
+    loadComponent: () =>
+      import('./features/news-list/news-list.component').then(
+        m => m.NewsListComponent
+      ),
+    title: 'Newsy spółki — SignalHub',
+  },
+  {
     path: 'company/:isin',
     loadComponent: () =>
       import('./features/company-view/company-view.component').then(

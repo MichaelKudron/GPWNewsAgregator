@@ -140,6 +140,26 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public List<ArticleListItemDto> GetNewsByDay(java.time.LocalDate date, UUID companyId) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        List<Article> articles = companyId == null
+                ? articleRepository.findPublishedBetween(start, end)
+                : articleRepository.findByCompanyPublishedBetween(companyId, start, end);
+        // tylko newsy, które faktycznie ruszyły sentyment (pozytywny/negatywny) —
+        // pomijamy ogólne wiadomości bez sentymentu / neutralne / mieszane (netto 0).
+        return toListItems(articles).stream()
+                .filter(dto -> "positive".equals(dto.getSentiment())
+                        || "negative".equals(dto.getSentiment()))
+                .toList();
+    }
+
+    @Override
+    public List<ArticleListItemDto> GetCompanyArticlesList(UUID companyId) {
+        return toListItems(articleRepository.findByCompany(companyId));
+    }
+
+    @Override
     public ArticleDto GetArticleById(UUID id) {
         return ArticleMapper.toDto(articleRepository.findById(id).get());
     }

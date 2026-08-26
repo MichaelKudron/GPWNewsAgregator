@@ -38,6 +38,17 @@ $r-lg:         14px;
   color: $text-2;
 }
 
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: $text-2;
+  margin-bottom: 0.5rem;
+
+  &:hover { color: $accent; }
+}
+
 // ── Przełącznik widoku ──
 .view-toggle {
   display: flex;

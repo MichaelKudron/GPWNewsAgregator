@@ -128,6 +128,23 @@ export class ArticleService {
     return this.http.get<SentimentPoint[]>(url);
   }
 
+  /** Newsy opublikowane danego dnia (drilldown z wykresu sentymentu). */
+  getNewsByDay(date: string, companyId?: string): Observable<NewsItem[]> {
+    let url = `${this.base}/by-day?date=${date}`;
+    if (companyId) url += `&companyId=${companyId}`;
+    return this.http.get<NewsItemWire[]>(url).pipe(
+      map(list => list.map(n => ({
+        id: n.id,
+        title: n.title,
+        sourceCode: n.source_code,
+        summary: n.summary,
+        publishedAt: n.published_at,
+        sentiment: n.sentiment,
+        companies: n.companies ?? [],
+      })))
+    );
+  }
+
   /** Najczęściej opisywane spółki (top 5 wg liczby artykułów). */
   getTrendingCompanies(): Observable<TrendingCompany[]> {
     return this.http.get<TrendingWire[]>(`${this.base}/trending-companies`).pipe(
@@ -136,6 +153,21 @@ export class ArticleService {
         ticker: c.ticker,
         isin: c.isin,
         articleCount: c.article_count,
+      })))
+    );
+  }
+
+  /** Wszystkie newsy powiązane ze spółką jako rich lista (podstrona newsów spółki). */
+  getCompanyArticlesList(companyId: string): Observable<NewsItem[]> {
+    return this.http.get<NewsItemWire[]>(`${this.base}/company/${companyId}/list`).pipe(
+      map(list => list.map(n => ({
+        id: n.id,
+        title: n.title,
+        sourceCode: n.source_code,
+        summary: n.summary,
+        publishedAt: n.published_at,
+        sentiment: n.sentiment,
+        companies: n.companies ?? [],
       })))
     );
   }

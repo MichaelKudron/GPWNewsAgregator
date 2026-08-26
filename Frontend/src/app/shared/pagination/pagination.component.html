@@ -3,6 +3,7 @@
     <button class="pg-btn pg-arrow" [disabled]="page() === 0" (click)="go(page() - 1)" aria-label="Poprzednia">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
            stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Wstecz</span>
     </button>
 
     @for (item of items(); track $index) {
@@ -14,6 +15,7 @@
     }
 
     <button class="pg-btn pg-arrow" [disabled]="page() === totalPages() - 1" (click)="go(page() + 1)" aria-label="Następna">
+      <span>Dalej</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
            stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>

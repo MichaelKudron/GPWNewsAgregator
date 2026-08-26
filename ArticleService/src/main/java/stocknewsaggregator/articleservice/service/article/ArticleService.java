@@ -18,6 +18,8 @@ public interface ArticleService {
     List<ArticleListItemDto> GetLatestClassified();
     List<LinkedCompanyDto> GetArticleCompanies(UUID articleId);
     List<SentimentPointDto> GetSentimentTimeline(UUID companyId);
+    List<ArticleListItemDto> GetNewsByDay(java.time.LocalDate date, UUID companyId);
+    List<ArticleListItemDto> GetCompanyArticlesList(UUID companyId);
     List<TrendingCompanyDto> GetTrendingCompanies();
 
     ArticleDto GetArticleById(UUID id);
