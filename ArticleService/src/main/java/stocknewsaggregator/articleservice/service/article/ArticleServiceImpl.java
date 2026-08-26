@@ -7,8 +7,10 @@ import stocknewsaggregator.articleservice.dto.EntityDto.ArticleDto;
 import stocknewsaggregator.articleservice.dto.CompanyArticleDto;
 import stocknewsaggregator.articleservice.dto.LinkedCompanyDto;
 import stocknewsaggregator.articleservice.dto.MatchingCompanyDto;
+import stocknewsaggregator.articleservice.dto.SentimentPointDto;
 import stocknewsaggregator.articleservice.dto.SummaryDto;
 import stocknewsaggregator.articleservice.dto.TrendingCompanyDto;
+import stocknewsaggregator.articleservice.repository.SentimentDayCount;
 import stocknewsaggregator.articleservice.entity.Article;
 import stocknewsaggregator.articleservice.entity.ArticleCompanyLink;
 import stocknewsaggregator.articleservice.entity.enums.Sentiment;
@@ -120,6 +122,21 @@ public class ArticleServiceImpl implements ArticleService {
                             company.getName(), company.getTicker(), company.getIsin(), count.getCount());
                 })
                 .toList();
+    }
+
+    @Override
+    public List<SentimentPointDto> GetSentimentTimeline(UUID companyId) {
+        List<SentimentDayCount> daily = companyId == null
+                ? articleCompanyLinkRepository.sentimentTimeline()
+                : articleCompanyLinkRepository.sentimentTimelineByCompany(companyId);
+
+        List<SentimentPointDto> points = new ArrayList<>();
+        long cumulative = 0;
+        for (SentimentDayCount d : daily) {
+            cumulative += d.getNet();
+            points.add(new SentimentPointDto(d.getDay(), cumulative, d.getNet()));
+        }
+        return points;
     }
 
     @Override

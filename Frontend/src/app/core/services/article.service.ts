@@ -7,6 +7,7 @@ import {
   NewsItem,
   LinkedCompany,
   MarketMood,
+  SentimentPoint,
   TrendingCompany,
 } from '../models/article.model';
 import { environment } from '../../../environments/environment';
@@ -117,6 +118,14 @@ export class ArticleService {
   /** Bilans sentymentu ostatnich artykułów — kafelek „Nastrój rynku". */
   getMarketMood(): Observable<MarketMood> {
     return this.http.get<MarketMood>(`${this.base}/sentiment-summary`);
+  }
+
+  /** Skumulowany sentyment w czasie — cały rynek lub jedna spółka (companyId). */
+  getSentimentTimeline(companyId?: string): Observable<SentimentPoint[]> {
+    const url = companyId
+      ? `${this.base}/sentiment-timeline?companyId=${companyId}`
+      : `${this.base}/sentiment-timeline`;
+    return this.http.get<SentimentPoint[]>(url);
   }
 
   /** Najczęściej opisywane spółki (top 5 wg liczby artykułów). */

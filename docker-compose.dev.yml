@@ -15,7 +15,7 @@ services:
       - "8004:8004"
   companyservice:
     ports:
-      - "8081:8081"
+      - "18081:8081"   # host 18081 (8081 bywa zarezerwowany przez WinNAT na Windows)
   gateway:
     ports:
-      - "8080:8080"
+      - "18080:8080"   # host 18080 (8080 j.w.); dev-front woła localhost:18080

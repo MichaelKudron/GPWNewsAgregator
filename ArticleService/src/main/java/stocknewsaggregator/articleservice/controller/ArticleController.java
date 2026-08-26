@@ -5,6 +5,7 @@ import stocknewsaggregator.articleservice.dto.EntityDto.ArticleDto;
 import stocknewsaggregator.articleservice.dto.CompanyArticleDto;
 import stocknewsaggregator.articleservice.dto.FetchResponseDto;
 import stocknewsaggregator.articleservice.dto.LinkedCompanyDto;
+import stocknewsaggregator.articleservice.dto.SentimentPointDto;
 import stocknewsaggregator.articleservice.dto.SummaryDto;
 import stocknewsaggregator.articleservice.dto.TrendingCompanyDto;
 import stocknewsaggregator.articleservice.service.Analysis.ArticleAnaliseService;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -59,6 +61,11 @@ public class ArticleController {
     @GetMapping("/sentiment-summary")
     public ResponseEntity<SummaryDto> getSummary() {
         return ResponseEntity.ok(articleService.GetSummary());
+    }
+    @GetMapping("/sentiment-timeline")
+    public ResponseEntity<List<SentimentPointDto>> getSentimentTimeline(
+            @RequestParam(required = false) UUID companyId) {
+        return ResponseEntity.ok(articleService.GetSentimentTimeline(companyId));
     }
     @GetMapping("/latest")
     public ResponseEntity<List<ArticleListItemDto>> getLatest() {

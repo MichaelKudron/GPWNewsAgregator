@@ -111,6 +111,22 @@
       </div>
     </section>
 
+    <!-- Sentyment spółki w czasie -->
+    @if (sentimentTimeline().length) {
+      <section class="sentiment-section">
+        <div class="sentiment-topbar">
+          <span class="sentiment-label">Sentyment w czasie</span>
+          <span class="sentiment-score" [class.pos]="sentimentScore() >= 0" [class.neg]="sentimentScore() < 0">
+            {{ sentimentScore() >= 0 ? '+' : '' }}{{ sentimentScore() }} pkt
+          </span>
+        </div>
+        <div class="sentiment-body">
+          <app-sentiment-chart [points]="sentimentTimeline()"></app-sentiment-chart>
+        </div>
+        <p class="sentiment-note">Skumulowany bilans newsów — pozytywny +1, negatywny −1.</p>
+      </section>
+    }
+
     <!-- Articles -->
     <section class="articles-section">
       <div class="articles-topbar">

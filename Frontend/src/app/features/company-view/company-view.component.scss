@@ -253,6 +253,47 @@ $r-lg:         14px;
   overflow: hidden;
 }
 
+// ── Sentyment w czasie ──
+.sentiment-section {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $r-lg;
+  padding: 1rem 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.sentiment-topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.sentiment-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $text-2;
+}
+
+.sentiment-score {
+  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &.pos { color: $green; }
+  &.neg { color: $red; }
+}
+
+.sentiment-body {
+  height: 170px;
+}
+
+.sentiment-note {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: $text-3;
+}
+
 .chart-topbar {
   display: flex;
   align-items: center;

@@ -38,6 +38,13 @@ export interface MarketMood {
   neutral: number;
 }
 
+/** Punkt osi czasu sentymentu (GET /article/sentiment-timeline) */
+export interface SentimentPoint {
+  date: string;   // YYYY-MM-DD
+  score: number;  // skumulowany bilans
+  net: number;    // netto tego dnia
+}
+
 /** Najczęściej opisywana spółka (GET /article/trending-companies) */
 export interface TrendingCompany {
   name: string;

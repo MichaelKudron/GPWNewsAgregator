@@ -4,6 +4,7 @@ import stocknewsaggregator.articleservice.dto.ArticleListItemDto;
 import stocknewsaggregator.articleservice.dto.EntityDto.ArticleDto;
 import stocknewsaggregator.articleservice.dto.CompanyArticleDto;
 import stocknewsaggregator.articleservice.dto.LinkedCompanyDto;
+import stocknewsaggregator.articleservice.dto.SentimentPointDto;
 import stocknewsaggregator.articleservice.dto.SummaryDto;
 import stocknewsaggregator.articleservice.dto.TrendingCompanyDto;
 
@@ -16,6 +17,7 @@ public interface ArticleService {
     List<ArticleListItemDto> GetLatest();
     List<ArticleListItemDto> GetLatestClassified();
     List<LinkedCompanyDto> GetArticleCompanies(UUID articleId);
+    List<SentimentPointDto> GetSentimentTimeline(UUID companyId);
     List<TrendingCompanyDto> GetTrendingCompanies();
 
     ArticleDto GetArticleById(UUID id);

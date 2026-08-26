@@ -41,6 +41,22 @@
     </section>
   }
 
+  <!-- Sentyment rynku w czasie (skumulowany) -->
+  @if (sentimentTimeline().length) {
+    <section class="sentiment-card">
+      <div class="sentiment-head">
+        <span class="sentiment-title">Sentyment rynku w czasie</span>
+        <span class="sentiment-score" [class.pos]="sentimentScore() >= 0" [class.neg]="sentimentScore() < 0">
+          {{ sentimentScore() >= 0 ? '+' : '' }}{{ sentimentScore() }} pkt
+        </span>
+      </div>
+      <div class="sentiment-chart">
+        <app-sentiment-chart [points]="sentimentTimeline()"></app-sentiment-chart>
+      </div>
+      <p class="sentiment-note">Skumulowany bilans — pozytywny news +1, negatywny −1.</p>
+    </section>
+  }
+
   <!-- Wykres indeksu -->
   <section class="chart-section">
     <div class="chart-topbar">
